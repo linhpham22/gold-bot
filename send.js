@@ -36,7 +36,8 @@ function delta(now, before) {
   if (before == null || now == null) return '';
   const d = now - before;
   if (Math.abs(d) < 1000) return ' (—)';
-  return d > 0 ? ` (🔺${trS(Math.abs(d))})` : ` (🔻${trS(Math.abs(d))})`;
+  // quy uoc VN: xanh = tang, do = giam
+  return d > 0 ? ` (🟢▲${trS(Math.abs(d))})` : ` (🔴▼${trS(Math.abs(d))})`;
 }
 
 const when = new Date(cur.t).toLocaleString('vi-VN', { timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
@@ -56,7 +57,7 @@ function macroBlock() {
   const M = cur.macro;
   if (!M) return '';
   const f = (n, d) => n.toLocaleString('vi-VN', { maximumFractionDigits: d == null ? 2 : d });
-  const chg = (o) => (o && o.chgPct != null ? (o.chgPct >= 0 ? ` (🔺${f(Math.abs(o.chgPct), 2)}%)` : ` (🔻${f(Math.abs(o.chgPct), 2)}%)`) : '');
+  const chg = (o) => (o && o.chgPct != null ? (o.chgPct >= 0 ? ` (🟢▲${f(Math.abs(o.chgPct), 2)}%)` : ` (🔴▼${f(Math.abs(o.chgPct), 2)}%)`) : '');
   let s = '';
   if (M.dxy) s += `• USD (DXY): <b>${f(M.dxy.v)}</b>${chg(M.dxy)}${M.dxy.chgPct < 0 ? ' — USD yếu, hỗ trợ vàng' : M.dxy.chgPct > 0 ? ' — USD mạnh, ép giá vàng' : ''}\n`;
   if (M.oil) s += `• Dầu WTI: <b>${f(M.oil.v)} $/thùng</b>${chg(M.oil)}\n`;
@@ -125,7 +126,7 @@ async function send(text) {
     const sinceT = new Date(state.t).toLocaleString('vi-VN', { timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
     let m = `🚨 <b>CẢNH BÁO GIÁ VÀNG ${when}</b> <i>(triệu/lượng)</i>\n`;
     m += `<i>Biến động ≥ ${num(THRESHOLD)} đ/lượng so với bản tin ${sinceT}:</i>\n`;
-    for (const mv of moves) m += `• ${mv.label}: ${mv.d > 0 ? '🔺 TĂNG' : '🔻 GIẢM'} <b>${trS(Math.abs(mv.d))} triệu</b>\n`;
+    for (const mv of moves) m += `• ${mv.label}: ${mv.d > 0 ? '🟢▲ TĂNG' : '🔴▼ GIẢM'} <b>${trS(Math.abs(mv.d))} triệu</b>\n`;
     m += `\n` + priceBlock(state);
     if (URL) m += `\n📈 Biểu đồ: ${URL}`;
     await send(m);

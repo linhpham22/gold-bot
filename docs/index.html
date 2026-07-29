@@ -9,7 +9,8 @@
   :root{
     --bg:#0f0e0a; --card:#1b1912; --card2:#221f14; --line:#3a3421;
     --gold:#e8b93b; --gold2:#f5d67a; --text:#f2ead3; --muted:#9a8f6f;
-    --up:#ef6a6a; --down:#5fc98e;
+    /* quy uoc bang dien VN: xanh = tang, do = giam */
+    --up:#5fc98e; --down:#ef6a6a;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:radial-gradient(1200px 500px at 50% -100px,#2a2410 0%,var(--bg) 60%);color:var(--text);min-height:100vh;padding:20px 14px 40px}
@@ -30,7 +31,7 @@
   .range button.on{background:var(--gold);color:#1b1500;border-color:var(--gold);font-weight:700}
   .chartbox{position:relative;height:320px}
   .chartbox.short{height:220px}
-  .err{text-align:center;color:var(--up);padding:40px 0}
+  .err{text-align:center;color:var(--down);padding:40px 0}
   .sig{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:1.05rem}
   .sig .dot{font-size:1.6rem}
   .sig b{color:var(--gold2)}
