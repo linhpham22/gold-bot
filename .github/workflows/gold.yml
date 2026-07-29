@@ -1,0 +1,45 @@
+name: Gold price bot
+
+on:
+  schedule:
+    # Gio VN = UTC+7. 8h00 VN = 1h00 UTC, 17h00 VN = 10h00 UTC
+    - cron: '0 1,10 * * *'
+    # 12h30 VN = 5h30 UTC
+    - cron: '30 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gold-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lay gia vang
+        run: node fetch.js
+
+      - name: Luu lich su vao repo
+        run: |
+          git config user.name "gold-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/history.json docs/latest.json
+          git diff --cached --quiet || git commit -m "cap nhat gia vang"
+          git pull --rebase origin main || true
+          git push
+
+      - name: Gui Telegram
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          PAGES_URL: ${{ secrets.PAGES_URL }}
+        run: node send.js

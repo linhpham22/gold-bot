@@ -1,0 +1,35 @@
+# 🥇 Gold Bot — Bot cập nhật giá vàng
+
+Bot tự động theo dõi giá vàng, chạy hoàn toàn trên cloud (GitHub Actions) — **không phụ thuộc máy tính bật hay tắt**.
+
+## Hoạt động
+
+- **3 lần/ngày** (8h00 · 12h30 · 17h00 giờ VN) bot tự:
+  1. Lấy giá **vàng miếng SJC** + **nhẫn tròn trơn 9999** (nguồn Bảo Tín Minh Châu)
+  2. Lấy giá **vàng thế giới** (Yahoo Finance) + **tỷ giá USD/VND**, quy đổi ra triệu/lượng
+  3. Tính **chênh lệch SJC − thế giới**
+  4. Lưu lịch sử vào `docs/history.json` → dashboard GitHub Pages tự cập nhật
+  5. Gửi bản tin **Telegram** kèm biến động 🔺🔻 so với lần trước
+
+## Cấu trúc
+
+| File | Vai trò |
+|---|---|
+| `fetch.js` | Lấy giá từ các nguồn, ghi `docs/history.json` + `docs/latest.json` |
+| `send.js` | Soạn + gửi bản tin Telegram |
+| `docs/index.html` | Dashboard biểu đồ (GitHub Pages) |
+| `.github/workflows/gold.yml` | Lịch chạy tự động |
+
+## Secrets (Settings → Secrets and variables → Actions)
+
+- `TELEGRAM_TOKEN` — token bot Telegram
+- `CHAT_ID` — id người nhận
+- `PAGES_URL` — link dashboard (tùy chọn)
+
+## Chỉnh lịch
+
+Sửa `cron` trong `.github/workflows/gold.yml` (giờ UTC = giờ VN − 7).
+
+## Chạy tay
+
+Tab **Actions** → *Gold price bot* → **Run workflow**.
