@@ -52,6 +52,24 @@ function priceBlock(base) {
   return s;
 }
 
+function macroBlock() {
+  const M = cur.macro;
+  if (!M) return '';
+  const f = (n, d) => n.toLocaleString('vi-VN', { maximumFractionDigits: d == null ? 2 : d });
+  const chg = (o) => (o && o.chgPct != null ? (o.chgPct >= 0 ? ` (🔺${f(Math.abs(o.chgPct), 2)}%)` : ` (🔻${f(Math.abs(o.chgPct), 2)}%)`) : '');
+  let s = '';
+  if (M.dxy) s += `• USD (DXY): <b>${f(M.dxy.v)}</b>${chg(M.dxy)}${M.dxy.chgPct < 0 ? ' — USD yếu, hỗ trợ vàng' : M.dxy.chgPct > 0 ? ' — USD mạnh, ép giá vàng' : ''}\n`;
+  if (M.oil) s += `• Dầu WTI: <b>${f(M.oil.v)} $/thùng</b>${chg(M.oil)}\n`;
+  if (M.gld) s += `• Quỹ SPDR GLD: <b>${f(M.gld.v)} $</b>${chg(M.gld)}${M.gld.vol ? ` · KL ${f(M.gld.vol / 1e6, 1)}tr cp` : ''}\n`;
+  if (M.fed != null) {
+    s += `• Lãi suất FED: <b>${f(M.fed)}%</b>`;
+    if (M.cpiYoY != null) s += ` · CPI Mỹ: ${f(M.cpiYoY, 1)}% → LS thực <b>${M.realRate >= 0 ? '+' : ''}${f(M.realRate, 1)}%</b>${M.realRate < 0 ? ' (âm — có lợi cho vàng)' : ''}`;
+    s += `\n`;
+  }
+  if (!s) return '';
+  return `\n🌐 <b>Vĩ mô</b> <i>(so phiên trước)</i>\n` + s;
+}
+
 function analysisBlock() {
   if (!A.avg7) return '';
   let s = `\n📊 <b>So sánh</b>\n`;
@@ -118,6 +136,7 @@ async function send(text) {
   // Ban tin day du
   let m = `🥇 <b>Giá vàng ${when}</b> <i>(triệu/lượng)</i>\n\n`;
   m += priceBlock(prev ? { sjcSell: prev.sjc[1], ringSell: prev.ring && prev.ring[1], worldLuong: prev.worldLuong } : null);
+  m += macroBlock();
   m += analysisBlock();
   if (URL) m += `\n📈 Biểu đồ: ${URL}`;
   await send(m);

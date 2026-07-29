@@ -107,6 +107,42 @@ async function labeled(name, p) {
   catch (e) { throw new Error(name + ': ' + e.message); }
 }
 
+// --- Chi so vi mo tham khao: DXY, dau WTI, quy GLD (Yahoo), lai suat FED + CPI My (FRED CSV, khong can key) ---
+async function yahooQuote(sym) {
+  const d = await getJson('https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(sym) + '?range=10d&interval=1d');
+  const r = d.chart.result[0];
+  const closes = ((r.indicators.quote[0] || {}).close || []).filter((x) => x != null);
+  const v = r.meta.regularMarketPrice != null ? r.meta.regularMarketPrice : closes[closes.length - 1];
+  // gia dong cua gan nhat KHAC v ro rang (bo qua chinh phien hien tai, ke ca lech lam tron cuc nho)
+  let prev = null;
+  for (let i = closes.length - 1; i >= 0; i--) { if (Math.abs(closes[i] - v) / v > 1e-4) { prev = closes[i]; break; } }
+  const chgPct = prev ? ((v - prev) / prev) * 100 : null;
+  return { v, chgPct, vol: r.meta.regularMarketVolume || null };
+}
+
+async function fredCsv(id) {
+  const txt = await getText('https://fred.stlouisfed.org/graph/fredgraph.csv?id=' + id);
+  return txt.trim().split('\n').slice(1).map((l) => l.split(','))
+    .filter((p) => p[1] && p[1] !== '.').map((p) => [p[0], Number(p[1])]);
+}
+
+async function fetchFedCpi() {
+  const [dff, cpi] = await Promise.all([fredCsv('DFF'), fredCsv('CPIAUCSL')]);
+  const fed = dff[dff.length - 1][1];
+  const [curDate, curV] = cpi[cpi.length - 1];
+  const yAgo = cpi.find((p) => p[0] === (Number(curDate.slice(0, 4)) - 1) + curDate.slice(4));
+  const cpiYoY = yAgo ? (curV / yAgo[1] - 1) * 100 : null;
+  return { fed, cpiYoY, cpiMonth: curDate.slice(0, 7), realRate: cpiYoY != null ? fed - cpiYoY : null };
+}
+
+// Moi chi so hong rieng le thi bo qua (null), khong lam do bot
+async function fetchMacro() {
+  const [dxy, oil, gld, fedcpi] = await Promise.allSettled([
+    yahooQuote('DX-Y.NYB'), yahooQuote('CL=F'), yahooQuote('GLD'), fetchFedCpi(),
+  ]).then((rs) => rs.map((r) => (r.status === 'fulfilled' ? r.value : (console.error('VI MO loi:', r.reason.message), null))));
+  return { dxy, oil, gld, ...(fedcpi || {}) };
+}
+
 // --- Chi so so sanh + tin hieu tham khao (quy tac minh bach, KHONG phai loi khuyen dau tu) ---
 function analyze(hist) {
   const cur = hist[hist.length - 1];
@@ -149,10 +185,11 @@ const TZ = 'Asia/Ho_Chi_Minh';
 const vnTime = (iso) => new Date(iso).toLocaleString('vi-VN', { timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
 
 (async () => {
-  const [dom, xau, usdvnd] = await Promise.all([
+  const [dom, xau, usdvnd, macro] = await Promise.all([
     labeled('TRONG NUOC', fetchDomestic()),
     labeled('THE GIOI', fetchXau()),
     labeled('TY GIA', fetchUsdVnd()),
+    fetchMacro(), // khong bao gio throw
   ]);
 
   const worldLuong = Math.round(xau * usdvnd * GRAM_PER_LUONG / GRAM_PER_OZ / 1000) * 1000;
@@ -165,6 +202,7 @@ const vnTime = (iso) => new Date(iso).toLocaleString('vi-VN', { timeZone: TZ, ho
     worldLuong,
     spread: dom.sjc.sell - worldLuong,
     srcAt: dom.sjc.at,
+    macro,
   };
 
   const docs = path.join(__dirname, 'docs');
