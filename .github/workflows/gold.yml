@@ -2,10 +2,12 @@ name: Gold price bot
 
 on:
   schedule:
-    # Gio VN = UTC+7. 8h00 VN = 1h00 UTC, 17h00 VN = 10h00 UTC
+    # BAN TIN day du - gio VN = UTC+7: 8h00 VN = 1h00 UTC, 17h00 VN = 10h00 UTC
     - cron: '0 1,10 * * *'
-    # 12h30 VN = 5h30 UTC
+    # BAN TIN 12h30 VN = 5h30 UTC
     - cron: '30 5 * * *'
+    # CANH BAO bien dong +-500k: moi gio tu 7h15 den 22h15 VN (= 0h15-15h15 UTC)
+    - cron: '15 0-15 * * *'
   workflow_dispatch:
 
 permissions:
@@ -18,6 +20,8 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Ho_Chi_Minh
     steps:
       - uses: actions/checkout@v4
 
@@ -25,21 +29,31 @@ jobs:
         with:
           node-version: 20
 
+      - name: Xac dinh che do (ban tin / canh bao)
+        id: mode
+        run: |
+          if [ "${{ github.event.schedule }}" = "15 0-15 * * *" ]; then
+            echo "mode=alert" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=bulletin" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Lay gia vang
         run: node fetch.js
-
-      - name: Luu lich su vao repo
-        run: |
-          git config user.name "gold-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add docs/history.json docs/latest.json
-          git diff --cached --quiet || git commit -m "cap nhat gia vang"
-          git pull --rebase origin main || true
-          git push
 
       - name: Gui Telegram
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
           PAGES_URL: ${{ secrets.PAGES_URL }}
-        run: node send.js
+          ALERT_THRESHOLD: '500000'
+        run: node send.js ${{ steps.mode.outputs.mode }}
+
+      - name: Luu du lieu vao repo
+        run: |
+          git config user.name "gold-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/history.json docs/latest.json docs/state.json
+          git diff --cached --quiet || git commit -m "cap nhat gia vang (${{ steps.mode.outputs.mode }})"
+          git pull --rebase origin main || true
+          git push

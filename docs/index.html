@@ -31,6 +31,15 @@
   .chartbox{position:relative;height:320px}
   .chartbox.short{height:220px}
   .err{text-align:center;color:var(--up);padding:40px 0}
+  .sig{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:1.05rem}
+  .sig .dot{font-size:1.6rem}
+  .sig b{color:var(--gold2)}
+  .reasons{color:var(--muted);font-size:.85rem;margin-bottom:12px}
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .metric{background:#00000033;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .metric .k{color:var(--muted);font-size:.72rem;margin-bottom:4px}
+  .metric .v{font-weight:700;font-size:1rem}
+  .disclaim{margin-top:14px;padding-top:10px;border-top:1px dashed var(--line);color:var(--muted);font-size:.75rem}
   footer{text-align:center;color:var(--muted);font-size:.75rem;margin-top:10px}
   @media(max-width:520px){.card .big{font-size:1.25rem}.chartbox{height:260px}}
 </style>
@@ -41,6 +50,12 @@
   <div class="sub" id="updated">Đang tải…</div>
 
   <div class="cards" id="cards"></div>
+
+  <div class="panel" id="signalPanel" style="display:none">
+    <h2>🧭 Tín hiệu tham khảo</h2>
+    <div id="signalBody"></div>
+    <div class="disclaim">⚠️ Tín hiệu do máy tính theo quy tắc so sánh lịch sử, chỉ để tham khảo — <b>không phải khuyến nghị đầu tư</b>.</div>
+  </div>
 
   <div class="range" id="range">
     <button data-d="7">7 ngày</button>
@@ -58,7 +73,7 @@
     <div class="chartbox short"><canvas id="spreadChart"></canvas></div>
   </div>
 
-  <footer>Nguồn: PNJ / Bảo Tín Minh Châu · Yahoo Finance · Cập nhật tự động 3 lần/ngày (8h · 12h30 · 17h)</footer>
+  <footer>Nguồn: PNJ / Bảo Tín Minh Châu · Yahoo Finance · Giờ Việt Nam · Cập nhật mỗi giờ (7h–22h) · Bản tin 8h · 12h30 · 17h · Cảnh báo khi biến động ≥ ±500.000đ/lượng</footer>
 </div>
 
 <script>
@@ -122,10 +137,33 @@ document.getElementById('range').addEventListener('click',e=>{
   renderCharts();
 });
 
-fetch('history.json?v='+Date.now()).then(r=>r.json()).then(h=>{
+const SIG={green:{icon:'🟢',cls:'delta-down'},yellow:{icon:'🟡',cls:''},red:{icon:'🔴',cls:'delta-up'}};
+const pctF=n=>(n>=0?'+':'')+n.toLocaleString('vi-VN',{maximumFractionDigits:1})+'%';
+
+function renderSignal(latest){
+  const A=latest&&latest.analysis;
+  if(!A||A.avg7==null) return;
+  const p=document.getElementById('signalPanel'), b=document.getElementById('signalBody');
+  const s=SIG[A.signal]||SIG.yellow;
+  let h=`<div class="sig"><span class="dot">${s.icon}</span><div><b>${A.label}</b></div></div>`;
+  if(A.reasons&&A.reasons.length) h+=`<div class="reasons">Lý do: ${A.reasons.join('; ')}.</div>`;
+  h+=`<div class="metrics">`;
+  h+=`<div class="metric"><div class="k">SJC so TB 7 ngày</div><div class="v">${pctF(A.pct7)}</div></div>`;
+  h+=`<div class="metric"><div class="k">SJC so TB 30 ngày</div><div class="v">${pctF(A.pct30)}</div></div>`;
+  h+=`<div class="metric"><div class="k">Chênh TG (TB 30 ngày: ${trS(A.premAvg30)} tr)</div><div class="v">${trS(latest.spread)} tr</div></div>`;
+  h+=`<div class="metric"><div class="k">Biên mua–bán SJC</div><div class="v">${trS(A.gap)} tr (${A.gapPct.toLocaleString('vi-VN',{maximumFractionDigits:1})}%)</div></div>`;
+  h+=`</div>`;
+  b.innerHTML=h;
+  p.style.display='block';
+}
+
+Promise.all([
+  fetch('history.json?v='+Date.now()).then(r=>r.json()),
+  fetch('latest.json?v='+Date.now()).then(r=>r.json()).catch(()=>null),
+]).then(([h,latest])=>{
   HIST=h;
   if(!HIST.length) throw new Error('empty');
-  renderCards();renderCharts();
+  renderCards();renderCharts();renderSignal(latest);
 }).catch(()=>{
   document.getElementById('updated').textContent='';
   document.getElementById('cards').innerHTML='<div class="err">Chưa có dữ liệu — bot sẽ tự cập nhật ở lần chạy tới.</div>';

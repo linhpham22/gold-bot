@@ -107,6 +107,47 @@ async function labeled(name, p) {
   catch (e) { throw new Error(name + ': ' + e.message); }
 }
 
+// --- Chi so so sanh + tin hieu tham khao (quy tac minh bach, KHONG phai loi khuyen dau tu) ---
+function analyze(hist) {
+  const cur = hist[hist.length - 1];
+  const now = new Date(cur.t).getTime();
+  const win = (days) => hist.filter((x) => now - new Date(x.t).getTime() <= days * 864e5);
+  const avg = (arr, f) => (arr.length ? arr.reduce((s, x) => s + f(x), 0) / arr.length : null);
+  const w7 = win(7), w30 = win(30);
+  const avg7 = avg(w7, (x) => x.sjc[1]);
+  const avg30 = avg(w30, (x) => x.sjc[1]);
+  const premAvg30 = avg(w30, (x) => x.spread);
+  const pct7 = avg7 ? ((cur.sjc[1] - avg7) / avg7) * 100 : null;
+  const pct30 = avg30 ? ((cur.sjc[1] - avg30) / avg30) * 100 : null;
+  const gap = cur.sjc[1] - cur.sjc[0]; // bien mua-ban
+  const gapPct = (gap / cur.sjc[1]) * 100;
+
+  let score = 0;
+  const reasons = [];
+  if (pct7 != null) {
+    if (pct7 < 0) { score++; reasons.push('giá thấp hơn TB 7 ngày'); }
+    else if (pct7 > 1) { score--; reasons.push('giá cao hơn TB 7 ngày >1%'); }
+  }
+  if (pct30 != null) {
+    if (pct30 < -1) { score++; reasons.push('giá thấp hơn TB 30 ngày >1%'); }
+    else if (pct30 > 3) { score--; reasons.push('giá cao hơn TB 30 ngày >3%'); }
+  }
+  if (premAvg30 != null) {
+    if (cur.spread <= premAvg30) { score++; reasons.push('chênh với thế giới thấp hơn mức bình thường'); }
+    else if (cur.spread > premAvg30 + 1e6) { score--; reasons.push('chênh với thế giới cao hơn bình thường >1 triệu'); }
+  }
+  if (gapPct > 3.5) { score--; reasons.push('biên mua–bán rộng (rủi ro thanh khoản)'); }
+
+  let signal, label;
+  if (score >= 2) { signal = 'green'; label = 'Tương đối thuận lợi để mua'; }
+  else if (score <= -1) { signal = 'red'; label = 'Giá đang cao — cân nhắc chờ'; }
+  else { signal = 'yellow'; label = 'Trung lập — chưa có lợi thế rõ rệt'; }
+  return { avg7, avg30, pct7, pct30, premAvg30, gap, gapPct, score, signal, label, reasons };
+}
+
+const TZ = 'Asia/Ho_Chi_Minh';
+const vnTime = (iso) => new Date(iso).toLocaleString('vi-VN', { timeZone: TZ, hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+
 (async () => {
   const [dom, xau, usdvnd] = await Promise.all([
     labeled('TRONG NUOC', fetchDomestic()),
@@ -132,9 +173,13 @@ async function labeled(name, p) {
   let hist = [];
   try { hist = JSON.parse(fs.readFileSync(histFile, 'utf8')); } catch (e) { /* lan dau chua co */ }
   hist.push(snap);
-  if (hist.length > 2500) hist = hist.slice(-2500); // ~ 2 nam voi 3 lan/ngay
+  if (hist.length > 6000) hist = hist.slice(-6000); // ~10 thang voi ~19 lan/ngay
   fs.writeFileSync(histFile, JSON.stringify(hist));
-  fs.writeFileSync(path.join(docs, 'latest.json'), JSON.stringify(snap, null, 2));
+
+  const analysis = analyze(hist);
+  const latest = { ...snap, tVN: vnTime(snap.t), analysis };
+  fs.writeFileSync(path.join(docs, 'latest.json'), JSON.stringify(latest, null, 2));
 
   console.log('OK:', JSON.stringify(snap));
+  console.log('PHAN TICH:', JSON.stringify(analysis));
 })().catch((e) => { console.error('FETCH LOI:', e.message); process.exit(1); });

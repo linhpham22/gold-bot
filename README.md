@@ -2,14 +2,16 @@
 
 Bot tự động theo dõi giá vàng, chạy hoàn toàn trên cloud (GitHub Actions) — **không phụ thuộc máy tính bật hay tắt**.
 
-## Hoạt động
+## Hoạt động (mọi giờ đều là giờ Việt Nam)
 
-- **3 lần/ngày** (8h00 · 12h30 · 17h00 giờ VN) bot tự:
+- **Bản tin 3 lần/ngày** (8h00 · 12h30 · 17h00):
   1. Lấy giá **vàng miếng SJC** + **nhẫn trơn 9999** (nguồn PNJ, dự phòng Bảo Tín Minh Châu)
   2. Lấy giá **vàng thế giới** (Yahoo Finance) + **tỷ giá USD/VND**, quy đổi ra triệu/lượng
-  3. Tính **chênh lệch SJC − thế giới**
-  4. Lưu lịch sử vào `docs/history.json` → dashboard GitHub Pages tự cập nhật
-  5. Gửi bản tin **Telegram** kèm biến động 🔺🔻 so với lần trước
+  3. Tính **chênh lệch SJC − thế giới**, so sánh **TB 7/30 ngày**, biên mua–bán
+  4. Đưa **tín hiệu tham khảo** 🟢🟡🔴 theo quy tắc minh bạch (kèm lý do — *không phải khuyến nghị đầu tư*)
+  5. Lưu lịch sử vào `docs/history.json` → dashboard GitHub Pages tự cập nhật
+  6. Gửi bản tin **Telegram** kèm biến động 🔺🔻 so với lần trước
+- **Cảnh báo biến động**: mỗi giờ (7h15–22h15) bot kiểm tra giá; nếu SJC / nhẫn / thế giới thay đổi **≥ ±500.000đ/lượng** so với tin nhắn gần nhất → gửi 🚨 cảnh báo ngay. Ngưỡng chỉnh ở `ALERT_THRESHOLD` trong workflow.
 
 ## Cấu trúc
 
