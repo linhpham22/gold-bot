@@ -2,7 +2,7 @@
  * fetch.js - Lay gia vang trong nuoc + the gioi + ty gia, ghi vao docs/history.json + docs/latest.json.
  * Chay tren GitHub Actions (Node 20, khong can thu vien ngoai).
  * Nguon:
- *  - Trong nuoc: api.btmc.vn (Bao Tin Minh Chau) - gia niem yet theo CHI, nhan x10 = gia/LUONG
+ *  - Trong nuoc: edge-api.pnj.io (PNJ, chinh) / api.btmc.vn (Bao Tin Minh Chau, du phong)
  *  - The gioi:   Yahoo Finance GC=F (USD/oz), du phong stooq.com
  *  - Ty gia:     Yahoo Finance VND=X, du phong open.er-api.com
  */
@@ -25,8 +25,23 @@ async function getText(url) {
   return r.text();
 }
 
-// --- Gia trong nuoc (BTMC) ---
-async function fetchDomestic() {
+// --- Gia trong nuoc: PNJ (chinh) ---
+// Gia PNJ tinh bang NGHIN dong / CHI -> x10000 = dong / LUONG
+async function fetchPNJ() {
+  const d = await getJson('https://edge-api.pnj.io/ecom-frontend/v1/get-gold-price?zone=00');
+  const find = (masp) => {
+    const r = (d.data || []).find((x) => x.masp === masp);
+    if (r && r.giamua > 0 && r.giaban > 0) return { buy: r.giamua * 10000, sell: r.giaban * 10000, at: d.updateAt || '' };
+    return null;
+  };
+  const sjc = find('SJC');
+  const ring = find('N24K'); // Nhan Tron PNJ 999.9
+  if (!sjc) throw new Error('PNJ: khong co gia SJC');
+  return { sjc, ring };
+}
+
+// --- Gia trong nuoc: BTMC (du phong) ---
+async function fetchBTMC() {
   const d = await getJson('http://api.btmc.vn/api/BTMCAPI/getpricebtmc?key=3kd8ub1llcg9t45hnoh8hmn7t5kc2v');
   const rows = d.DataList.Data;
   const pick = (needle) => {
@@ -43,8 +58,16 @@ async function fetchDomestic() {
   };
   const sjc = pick('VÀNG MIẾNG SJC');
   const ring = pick('NHẪN TRÒN TRƠN');
-  if (!sjc) throw new Error('Khong tim thay gia SJC trong du lieu BTMC');
+  if (!sjc) throw new Error('BTMC: khong co gia SJC');
   return { sjc, ring };
+}
+
+async function fetchDomestic() {
+  try { return await fetchPNJ(); }
+  catch (e) {
+    console.error('PNJ loi (' + e.message + '), dung BTMC du phong...');
+    return fetchBTMC();
+  }
 }
 
 // --- Vang the gioi (USD/oz) ---
@@ -79,8 +102,17 @@ async function fetchUsdVnd() {
   }
 }
 
+async function labeled(name, p) {
+  try { return await p; }
+  catch (e) { throw new Error(name + ': ' + e.message); }
+}
+
 (async () => {
-  const [dom, xau, usdvnd] = await Promise.all([fetchDomestic(), fetchXau(), fetchUsdVnd()]);
+  const [dom, xau, usdvnd] = await Promise.all([
+    labeled('TRONG NUOC', fetchDomestic()),
+    labeled('THE GIOI', fetchXau()),
+    labeled('TY GIA', fetchUsdVnd()),
+  ]);
 
   const worldLuong = Math.round(xau * usdvnd * GRAM_PER_LUONG / GRAM_PER_OZ / 1000) * 1000;
   const snap = {

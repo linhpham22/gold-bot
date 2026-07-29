@@ -5,7 +5,7 @@ Bot tự động theo dõi giá vàng, chạy hoàn toàn trên cloud (GitHub Ac
 ## Hoạt động
 
 - **3 lần/ngày** (8h00 · 12h30 · 17h00 giờ VN) bot tự:
-  1. Lấy giá **vàng miếng SJC** + **nhẫn tròn trơn 9999** (nguồn Bảo Tín Minh Châu)
+  1. Lấy giá **vàng miếng SJC** + **nhẫn trơn 9999** (nguồn PNJ, dự phòng Bảo Tín Minh Châu)
   2. Lấy giá **vàng thế giới** (Yahoo Finance) + **tỷ giá USD/VND**, quy đổi ra triệu/lượng
   3. Tính **chênh lệch SJC − thế giới**
   4. Lưu lịch sử vào `docs/history.json` → dashboard GitHub Pages tự cập nhật
