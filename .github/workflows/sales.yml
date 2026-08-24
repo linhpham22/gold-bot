@@ -1,0 +1,55 @@
+name: Sales bot
+
+on:
+  schedule:
+    # POLL: doc tin nhan Telegram moi ~5 phut/lan (GitHub co the tre 5-15 phut)
+    - cron: '*/5 * * * *'
+    # BAO CAO tien hang cuoi ngay: 20h00 VN = 13h00 UTC
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Che do chay'
+        type: choice
+        options: [poll, report]
+        default: poll
+
+concurrency:
+  group: sales-bot
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Ho_Chi_Minh
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cai dat thu vien
+        run: npm ci
+
+      - name: Xac dinh che do (poll / report)
+        id: mode
+        run: |
+          if [ "${{ github.event.schedule }}" = "0 13 * * *" ]; then
+            echo "mode=report" >> "$GITHUB_OUTPUT"
+          elif [ -n "${{ github.event.inputs.mode }}" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=poll" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Chay bot
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node sales/bot.js ${{ steps.mode.outputs.mode }}
