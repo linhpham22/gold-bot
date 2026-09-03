@@ -160,6 +160,7 @@ td.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowra
       <label>GitHub token (quyền gist)</label>
       <input id="inToken" type="password" placeholder="ghp_..." autocomplete="off">
       <button class="primary" id="btnConnect">Kết nối</button>
+      <button class="primary" id="btnDemo" style="margin-top:10px;background:none;border:1px solid var(--s1);color:var(--s1)">👀 Dùng thử với dữ liệu mẫu</button>
       <p class="hint" style="margin-top:10px">Chưa có? Xem hướng dẫn tạo trong <b>sales/README.md</b> của repo.</p>
     </div>
   </section>
@@ -245,8 +246,11 @@ const OVERDUE_DAYS = 3;
 const LS_KEY = 'shop.cfg';
 const $ = (id) => document.getElementById(id);
 
+const ARTIFACT_DEMO = false; // ban demo dong: tu vao che do dung thu, khong co man ket noi
 let cfg = null;            // {gist, token}
 let book = null;           // {seq, orders:[]}
+let demo = false;          // che do dung thu: du lieu mau, khong ghi len gist
+let demoBook = null;
 let lastLoad = 0;
 let filter = 'open';
 
@@ -289,7 +293,31 @@ function toast(msg) {
 /* ================= gist API ================= */
 const ghHeaders = () => ({ Authorization: 'Bearer ' + cfg.token, Accept: 'application/vnd.github+json' });
 
+// du lieu mau cho che do dung thu
+function makeDemoBook() {
+  const iso = (d, h) => new Date(Date.now() - d * 864e5 - (h || 0) * 36e5).toISOString();
+  const O = (id, dAgo, customer, phone, items, amount, status, extra) => ({
+    id, created: iso(dAgo), customer, phone, items, amount, note: null,
+    status, shippedAt: null, paidAt: null, source: 'demo', ...(extra || {}),
+  });
+  return { seq: 12, orders: [
+    O(1, 13, 'Chị Lan', '0901 234 567', '2 áo thun size M', 350000, 'paid', { shippedAt: iso(12), paidAt: iso(11) }),
+    O(2, 11, 'Anh Tú', '0912 345 678', '1 quần jean size 30', 420000, 'paid', { shippedAt: iso(10), paidAt: iso(8) }),
+    O(3, 9, 'Cô Hoa', null, '3 khăn lụa quà biếu', 660000, 'paid', { shippedAt: iso(8), paidAt: iso(6) }),
+    O(4, 8, 'Em Ngọc', '0987 654 321', '1 váy hoa size S', 520000, 'paid', { shippedAt: iso(7), paidAt: iso(5) }),
+    O(5, 6, 'Chị Mai', '0977 111 222', '2 set đồ bộ mặc nhà', 500000, 'shipped', { shippedAt: iso(5), note: 'ship COD' }),
+    O(6, 5, 'Bạn Hương', null, '1 túi xách da', 890000, 'paid', { shippedAt: iso(4), paidAt: iso(2) }),
+    O(7, 4, 'Anh Dũng', '0909 000 111', '1 áo khoác dù nam', 450000, 'shipped', { shippedAt: iso(3) }),
+    O(8, 3, 'Chị Thảo', '0933 222 444', '4 áo thun trẻ em', 480000, 'paid', { shippedAt: iso(2), paidAt: iso(1) }),
+    O(9, 2, 'Cô Bảy', null, '2 khăn choàng', 340000, 'cancelled'),
+    O(10, 1, 'Em Trang', '0966 555 777', '1 đầm dự tiệc', 750000, 'shipped', { shippedAt: iso(0, 6) }),
+    O(11, 0.25, 'Chị Quỳnh', '0944 888 999', '3 áo sơ mi công sở', 900000, 'new', { note: 'giao giờ hành chính' }),
+    O(12, 0.1, 'Anh Phúc', null, '1 ví da nam', null, 'new'),
+  ] };
+}
+
 async function fetchBook() {
+  if (demo) return demoBook;
   const r = await fetch('https://api.github.com/gists/' + cfg.gist, { headers: ghHeaders() });
   if (r.status === 401 || r.status === 403) throw new Error('Token không hợp lệ hoặc hết hạn — kiểm tra lại trong ⚙️ Cài đặt.');
   if (r.status === 404) throw new Error('Không tìm thấy gist — kiểm tra Gist ID.');
@@ -304,6 +332,7 @@ async function fetchBook() {
 }
 
 async function patchBook(b) {
+  if (demo) { demoBook = b; return; }
   const r = await fetch('https://api.github.com/gists/' + cfg.gist, {
     method: 'PATCH',
     headers: { ...ghHeaders(), 'Content-Type': 'application/json' },
@@ -316,7 +345,8 @@ let syncing = false;
 function setBusy(on, label) {
   syncing = on;
   $('view-app').classList.toggle('busy', on);
-  $('syncState').textContent = on ? (label || 'Đang đồng bộ…') : 'Cập nhật ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  $('syncState').textContent = demo ? 'Bản dùng thử — dữ liệu mẫu, không lưu lại'
+    : on ? (label || 'Đang đồng bộ…') : 'Cập nhật ' + new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 }
 
 async function reload() {
@@ -544,14 +574,22 @@ function showTab(t) {
 }
 
 function boot() {
-  const ok = cfg && cfg.gist && cfg.token;
+  if (ARTIFACT_DEMO && !demo) startDemo();
+  const ok = demo || (cfg && cfg.gist && cfg.token);
   $('view-login').hidden = ok;
   $('view-app').hidden = !ok;
   $('nav').hidden = !ok;
   if (ok) reload();
 }
 
+function startDemo() {
+  demo = true;
+  demoBook = makeDemoBook();
+}
+
+$('btnDemo').onclick = () => { startDemo(); boot(); toast('👀 Đang xem bản dùng thử — thao tác thoải mái, không lưu lại'); };
 $('btnConnect').onclick = async () => {
+  demo = false;
   cfg = { gist: $('inGist').value.trim(), token: $('inToken').value.trim() };
   if (!cfg.gist || !cfg.token) { toast('Nhập đủ Gist ID và token nhé'); return; }
   try {
@@ -581,7 +619,7 @@ $('btnSaveSettings').onclick = () => {
   $('dlgSettings').close(); boot();
 };
 $('btnLogout').onclick = () => {
-  localStorage.removeItem(LS_KEY); cfg = null; book = null;
+  localStorage.removeItem(LS_KEY); cfg = null; book = null; demo = false; demoBook = null;
   $('dlgSettings').close(); boot();
 };
 // mo lai app sau >60s thi tu tai ban moi
