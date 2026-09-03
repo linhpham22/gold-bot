@@ -1,6 +1,6 @@
 # 🥇 Gold Bot — Bot cập nhật giá vàng
 
-> 🛒 Repo này còn có **Sales Bot** — bot chốt đơn + sổ tiền hàng cho việc bán hàng Facebook, xem hướng dẫn tại [`sales/README.md`](sales/README.md).
+> 🛒 Repo này còn có **Sales Bot** — bot chốt đơn + sổ tiền hàng cho việc bán hàng Facebook (kèm web app `docs/shop.html`), xem hướng dẫn tại [`sales/README.md`](sales/README.md).
 
 Bot tự động theo dõi giá vàng, chạy hoàn toàn trên cloud (GitHub Actions) — **không phụ thuộc máy tính bật hay tắt**.
 

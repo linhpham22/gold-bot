@@ -1,5 +1,7 @@
 # 🛒 Sales Bot — Bot chốt đơn + sổ tiền hàng
 
+> 📱 **Có kèm web app**: mở `https://<user>.github.io/<repo>/shop.html` (cùng GitHub Pages với dashboard giá vàng) — xem mục [Web app Sổ Đơn](#-web-app-sổ-đơn) bên dưới.
+
 Bot Telegram giúp thay Excel thủ công: ghi sổ đơn hàng, theo dõi tiền đã thu / chưa thu, báo cáo cuối ngày. Chạy hoàn toàn trên GitHub Actions (miễn phí, không cần bật máy) — cùng kiến trúc với gold-bot.
 
 ## Quy trình sử dụng hằng ngày
@@ -47,6 +49,21 @@ Dữ liệu đơn hàng chứa tên + SĐT khách nên **không lưu trong repo 
 - GitHub Actions + Gist: miễn phí.
 - Claude API: chỉ tốn khi gửi ảnh/văn bản cho AI đọc, cỡ vài trăm đồng mỗi ảnh.
 
+## 📱 Web app Sổ Đơn
+
+`docs/shop.html` là app web dùng **chung một cuốn sổ** (cùng gist) với bot Telegram — thao tác trên app có hiệu lực **ngay lập tức**, không phải đợi chu kỳ 5 phút của bot:
+
+- **Đơn hàng**: tìm kiếm theo tên/SĐT/hàng (gõ không dấu vẫn ra), lọc Đang mở / Quá hạn / Đã thu, bấm nút 📦 Đã gửi · 💰 Đã thu · ✕ Hủy ngay trên từng đơn.
+- **Thêm đơn**: nhập tay nhanh (tiền hiểu "350k", "1tr2"...). Ảnh chụp comment vẫn gửi qua bot Telegram để AI đọc.
+- **Báo cáo**: đơn/doanh thu/đã thu hôm nay, còn phải thu, biểu đồ 14 ngày, danh sách đơn quá hạn.
+
+Cách dùng:
+1. Bật GitHub Pages cho repo (Settings → Pages → nhánh `main`, thư mục `/docs`) — nếu dashboard giá vàng đã chạy thì đã bật sẵn.
+2. Mở `https://<user>.github.io/<repo>/shop.html` trên điện thoại → nhập `GIST_ID` + `GIST_TOKEN` (đã tạo ở phần cài đặt trên) → Kết nối.
+3. Bấm **Thêm vào màn hình chính** để dùng như app.
+
+Bảo mật: token chỉ lưu trong trình duyệt trên máy bạn (localStorage) và chỉ gửi tới GitHub; trang web công khai nhưng không có token thì không ai đọc được sổ. Đừng đăng nhập trên máy người lạ; lộ token thì vào <https://github.com/settings/tokens> thu hồi và tạo cái mới.
+
 ## Cấu trúc
 
 | File | Vai trò |
@@ -54,4 +71,5 @@ Dữ liệu đơn hàng chứa tên + SĐT khách nên **không lưu trong repo 
 | `sales/bot.js` | Nhận lệnh Telegram, ghi sổ, báo cáo |
 | `sales/ai.js` | Gọi Claude API đọc ảnh/văn bản → đơn hàng |
 | `sales/store.js` | Đọc/ghi sổ đơn trong secret gist |
+| `docs/shop.html` | Web app Sổ Đơn (GitHub Pages) |
 | `.github/workflows/sales.yml` | Lịch chạy tự động |
