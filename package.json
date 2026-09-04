@@ -1,8 +1,0 @@
-{
-  "name": "gold-bot",
-  "private": true,
-  "description": "Bot gia vang + bot chot don ban hang (Telegram, GitHub Actions)",
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.120.0"
-  }
-}
