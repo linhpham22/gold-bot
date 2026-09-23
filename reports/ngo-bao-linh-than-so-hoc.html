@@ -1,0 +1,363 @@
+<title>Ngô Bảo Linh — Hồ sơ số</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --paper:#f6f7f3; --surface:#ffffff; --ink:#1d2b2c; --ink-2:#4a5a5b; --line:#d9ded6;
+  --accent:#9a6b1f; --accent-soft:#f3e8d2;
+  --good:#3f6b4a; --good-soft:#e3eee4; --warn:#9b4a36; --warn-soft:#f6e3dc;
+  --cell:#eef1ec; --cell-on:#1d2b2c; --cell-on-ink:#f6f7f3; --cell-name:#c9a45f;
+  --serif:"Literata",Georgia,"Times New Roman",serif;
+  --sans:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#141a1b; --surface:#1b2324; --ink:#e7ebe6; --ink-2:#a9b4b1; --line:#2f3a3b;
+    --accent:#d9a857; --accent-soft:#3a2f1c;
+    --good:#8cc29a; --good-soft:#1f3326; --warn:#e79a83; --warn-soft:#3a231d;
+    --cell:#222c2d; --cell-on:#e7ebe6; --cell-on-ink:#141a1b; --cell-name:#8a6a33;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#141a1b; --surface:#1b2324; --ink:#e7ebe6; --ink-2:#a9b4b1; --line:#2f3a3b;
+  --accent:#d9a857; --accent-soft:#3a2f1c;
+  --good:#8cc29a; --good-soft:#1f3326; --warn:#e79a83; --warn-soft:#3a231d;
+  --cell:#222c2d; --cell-on:#e7ebe6; --cell-on-ink:#141a1b; --cell-name:#8a6a33;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.65;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;margin:0;line-height:1.25}
+h1{font-size:clamp(30px,5vw,44px);font-weight:700}
+h2{font-size:26px;font-weight:600;padding-bottom:10px;border-bottom:1px solid var(--line)}
+h3{font-size:19px;font-weight:600}
+p{margin:0;max-width:68ch}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.muted{color:var(--ink-2)}
+section{display:flex;flex-direction:column;gap:20px}
+.stack{display:flex;flex-direction:column;gap:14px}
+header.top{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+.meta{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14px;color:var(--ink-2)}
+.meta b{color:var(--ink);font-weight:600}
+.lp{font-family:var(--mono);font-weight:700;font-size:88px;line-height:1;color:var(--accent);text-align:right}
+.lp small{display:block;font-family:var(--sans);font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.note{background:var(--accent-soft);border-radius:10px;padding:14px 16px;font-size:14.5px}
+.num{font-family:var(--mono);font-weight:700}
+
+/* index table */
+.idx{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.idx div{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.idx .k{font-size:12.5px;color:var(--ink-2)}
+.idx .v{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--ink)}
+.idx .d{font-size:13px;color:var(--ink-2);line-height:1.45}
+
+/* grids */
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:28px}
+.chart{display:flex;flex-direction:column;gap:10px}
+.grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:280px;aspect-ratio:1/1}
+.grid9 span{background:var(--cell);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink-2);position:relative}
+.grid9 span.on{background:var(--cell-on);color:var(--cell-on-ink)}
+.grid9 span.nm{background:var(--cell);box-shadow:inset 0 0 0 2px var(--cell-name);color:var(--ink)}
+.grid9 span.empty{color:transparent}
+.grid9 span i{position:absolute;top:4px;left:7px;font-size:10px;font-style:normal;font-weight:500;opacity:.55}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600;background:var(--cell)}
+tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-weight:700;white-space:nowrap}
+
+/* two-col lists */
+.sw2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.box{border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.box.g{background:var(--good-soft)} .box.w{background:var(--warn-soft)}
+.box h3{font-size:17px}
+.box.g h3{color:var(--good)} .box.w h3{color:var(--warn)}
+ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+li{max-width:68ch}
+li b{font-weight:600}
+
+/* careers */
+.career{border-top:1px solid var(--line);padding-top:18px;display:grid;grid-template-columns:120px 1fr;gap:6px 20px}
+.career:first-of-type{border-top:0;padding-top:0}
+.fit{display:flex;flex-direction:column;gap:6px}
+.fit .lbl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.bar{height:6px;border-radius:3px;background:var(--cell);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.career .body{display:flex;flex-direction:column;gap:8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-size:12.5px;background:var(--cell);border-radius:999px;padding:3px 10px}
+.why{font-size:14px;color:var(--ink-2)}
+.why .num{color:var(--accent)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column;border-left:2px solid var(--line);margin-left:6px}
+.tl div{position:relative;padding:0 0 18px 22px}
+.tl div::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:2px solid var(--accent)}
+.tl div.now::before{background:var(--accent)}
+.tl b{font-family:var(--mono)}
+.tl .y{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.tl .py{font-size:12px;background:var(--accent-soft);border-radius:999px;padding:1px 9px;font-weight:600}
+footer{font-size:13px;color:var(--ink-2);border-top:1px solid var(--line);padding-top:18px}
+
+@media (max-width:560px){
+  header.top{grid-template-columns:1fr}
+  .lp{text-align:left;font-size:64px}
+  .career{grid-template-columns:1fr}
+}
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="stack">
+    <div class="eyebrow">Thần số học Pythagoras · Báo cáo định hướng nghề nghiệp</div>
+    <h1>Ngô Bảo Linh</h1>
+    <div class="meta">
+      <span>Ngày sinh <b>01/08/2011</b></span>
+      <span>Tuổi hiện tại <b>15</b></span>
+      <span>Năm cá nhân 2026 <b>1</b></span>
+      <span>Lập ngày <b>23/09/2026</b></span>
+    </div>
+  </div>
+  <div class="lp">13/4<small>Số chủ đạo</small></div>
+</header>
+
+<section>
+  <h2>Tóm tắt trong một đoạn</h2>
+  <p>Bảo Linh là người <b>xây dựng có chiều sâu</b>: bên ngoài vui vẻ, nói chuyện có duyên, dễ kết bạn (Nhân cách 3, ba số 1 trong biểu đồ); bên trong lại nghiêm túc, muốn hiểu tận gốc vấn đề (Sứ mệnh 7) và mơ làm được điều gì đó lớn, bền vững, có ích (Linh hồn 22/4). Con đường hợp nhất là những nghề <b>có hệ thống, có logic, có sản phẩm cụ thể</b>: kỹ thuật – công nghệ, phân tích dữ liệu – tài chính, kiến trúc – xây dựng, nghiên cứu khoa học. Bài học lớn nhất: số 4 là số chủ đạo nhưng lại <b>vắng mặt</b> ở cả ngày sinh lẫn tên, tức là tính kỷ luật và sự bền bỉ không có sẵn mà phải rèn. Nếu rèn được, Bảo Linh sẽ rất vững vàng.</p>
+  <p class="note">Tôi không tìm thấy tài liệu thần số học bạn nói đã nạp (không có trong repo hay Google Drive mà phiên này truy cập được), nên báo cáo dùng phương pháp Pythagoras phổ biến ở Việt Nam: số chủ đạo cộng dồn ngày sinh, biểu đồ 3×3, bảng chữ cái Pythagoras cho họ tên không dấu. Nếu tài liệu của bạn dùng quy ước khác, gửi lại cho tôi để điều chỉnh.</p>
+</section>
+
+<section>
+  <h2>Bảng chỉ số</h2>
+  <div class="idx">
+    <div><span class="k">Số chủ đạo (đường đời)</span><span class="v">13/4</span><span class="d">0+1+0+8+2+0+1+1 = 13 → 4. Có số nợ nghiệp 13.</span></div>
+    <div><span class="k">Số sứ mệnh (tên đầy đủ)</span><span class="v">7</span><span class="d">NGO 18 + BAO 9 + LINH 25 = 52 → 7</span></div>
+    <div><span class="k">Số linh hồn (nguyên âm)</span><span class="v">22/4</span><span class="d">O6 + A1 + O6 + I9 = 22, số bậc thầy</span></div>
+    <div><span class="k">Số nhân cách (phụ âm)</span><span class="v">3</span><span class="d">N5 G7 B2 L3 N5 H8 = 30 → 3</span></div>
+    <div><span class="k">Số ngày sinh</span><span class="v">1</span><span class="d">Sinh ngày 1</span></div>
+    <div><span class="k">Số thái độ (ngày + tháng)</span><span class="v">9</span><span class="d">1 + 8 = 9</span></div>
+    <div><span class="k">Số trưởng thành</span><span class="v">11/2</span><span class="d">Chủ đạo 4 + Sứ mệnh 7 = 11</span></div>
+    <div><span class="k">Số cân bằng (chữ cái đầu)</span><span class="v">1</span><span class="d">N5 + B2 + L3 = 10 → 1</span></div>
+    <div><span class="k">Số đam mê (lặp nhiều nhất trong tên)</span><span class="v">5 · 6</span><span class="d">Mỗi số xuất hiện 2 lần</span></div>
+    <div><span class="k">Bài học thiếu (cả ngày sinh lẫn tên)</span><span class="v">4</span><span class="d">Kỷ luật, trật tự, bền bỉ</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Biểu đồ ngày sinh và biểu đồ tổng hợp</h2>
+  <div class="charts">
+    <div class="chart">
+      <h3>Biểu đồ ngày sinh</h3>
+      <div class="grid9" aria-label="Biểu đồ ngày sinh">
+        <span class="empty"><i>3</i>·</span><span class="empty"><i>6</i>·</span><span class="empty"><i>9</i>·</span>
+        <span class="on">2</span><span class="empty"><i>5</i>·</span><span class="on">8</span>
+        <span class="on">111</span><span class="empty"><i>4</i>·</span><span class="empty"><i>7</i>·</span>
+      </div>
+      <p class="muted" style="font-size:14px">Có: 1 (ba lần), 2, 8. Thiếu: 3, 4, 5, 6, 7, 9.</p>
+    </div>
+    <div class="chart">
+      <h3>Tổng hợp ngày sinh và tên</h3>
+      <div class="grid9" aria-label="Biểu đồ tổng hợp">
+        <span class="nm">3</span><span class="nm">66</span><span class="nm">9</span>
+        <span class="on">22</span><span class="nm">55</span><span class="on">88</span>
+        <span class="on">1111</span><span class="empty"><i>4</i>·</span><span class="nm">7</span>
+      </div>
+      <p class="muted" style="font-size:14px">Tên bù gần đủ các ô trống. Chỉ còn thiếu số 4.</p>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--cell-on)"></i>Có trong ngày sinh</span>
+    <span><i class="sw" style="box-shadow:inset 0 0 0 2px var(--cell-name);background:var(--cell)"></i>Chỉ có trong tên (năng lượng bổ trợ, cần rèn mới phát huy)</span>
+    <span><i class="sw" style="background:var(--cell)"></i>Trống</span>
+  </div>
+
+  <div class="tbl"><table>
+    <thead><tr><th>Yếu tố</th><th>Ý nghĩa với Bảo Linh</th></tr></thead>
+    <tbody>
+      <tr><td class="n">111</td><td>Ba số 1: giỏi diễn đạt, hoạt ngôn, dễ nói chuyện với nhiều kiểu người, có khiếu thuyết phục và làm không khí vui lên. Cần học cách lắng nghe và tránh nói át người khác.</td></tr>
+      <tr><td class="n">2</td><td>Một số 2: trực giác tốt, nhạy với cảm xúc người đối diện, cân bằng giữa cảm và lý.</td></tr>
+      <tr><td class="n">8</td><td>Một số 8: cẩn thận, chu đáo trong những việc mình phụ trách, có ý thức trách nhiệm và độc lập; có tiềm năng quản lý, tài chính.</td></tr>
+      <tr><td>Trục trí não 3-6-9 trống</td><td>“Mũi tên trí nhớ ngắn hạn”: học trước quên sau nếu chỉ nghe/đọc. Học hiệu quả khi <b>ghi chép, vẽ sơ đồ, ôn lặp lại, gắn với việc thực hành</b>. Tên đã bổ sung đủ 3, 6, 9 nên đây là vùng có thể rèn, không phải điểm yếu cố định.</td></tr>
+      <tr><td>Trục 4-5-6 trống</td><td>“Mũi tên uất giận / thất vọng”: khi mọi việc không như kỳ vọng dễ bực bội, buông xuôi hoặc thu mình. Cần người lớn giúp đặt mục tiêu vừa sức và gọi tên cảm xúc.</td></tr>
+      <tr><td>Chéo 3-5-7 trống</td><td>“Mũi tên hoài nghi”: không dễ tin, muốn tự kiểm chứng, thích hỏi “tại sao”. Đây vừa là điểm yếu (ngờ vực, khó tin người) vừa là nền của tư duy phản biện, rất hợp với Sứ mệnh 7.</td></tr>
+      <tr><td>Thể chất (1-4-7) và cảm xúc (2-5-8)</td><td>Năng lượng dồn vào biểu đạt và cảm nhận hơn là lý thuyết thuần tuý: học qua làm, qua trải nghiệm và qua trao đổi với người khác.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Phân tích tính cách</h2>
+
+  <div class="stack">
+    <h3>Số chủ đạo 13/4: người xây nền móng</h3>
+    <p>Số 4 là số của sự thực tế, trật tự và bền vững. Bảo Linh thích những gì rõ ràng, có kế hoạch, có kết quả nhìn thấy được. Khi đã tin vào điều gì thì trung thành, đáng tin cậy, làm đến nơi đến chốn. Mặt trái: có thể cứng nhắc, bảo thủ với cách của mình, ngại thay đổi đột ngột.</p>
+    <p>Con số 13 phía trước là <b>số nợ nghiệp</b>. Bài học của 13 là: không có đường tắt. Người mang 13 dễ nản khi việc kéo dài, hay tìm cách làm nhanh cho xong, hoặc có lúc lười rồi bù dồn. Kết hợp với việc thiếu số 4 trong cả ngày sinh lẫn tên, thông điệp rất rõ: <b>kỷ luật là thứ Bảo Linh phải rèn, và cũng chính là chìa khóa thành công</b>. Khi đã hình thành thói quen, người số 4 có sức bền hơn hẳn người khác.</p>
+  </div>
+
+  <div class="stack">
+    <h3>Linh hồn 22/4: ước mơ lớn nhưng thực tế</h3>
+    <p>Nguyên âm trong tên cộng ra 22, số bậc thầy “Kiến trúc sư”. Khát khao sâu bên trong là tạo ra thứ gì đó có quy mô, có giá trị lâu dài cho nhiều người: một công trình, một hệ thống, một tổ chức. Linh hồn và chủ đạo cùng quy về 4, nên điều Bảo Linh muốn và con đường Bảo Linh đi khớp nhau, đây là một lợi thế hiếm. Áp lực đi kèm: tự đặt kỳ vọng cao, dễ căng thẳng nếu thấy mình “chưa đủ giỏi”.</p>
+  </div>
+
+  <div class="stack">
+    <h3>Sứ mệnh 7: người đi tìm câu trả lời</h3>
+    <p>Số 7 là số của phân tích, nghiên cứu và chiều sâu. Bảo Linh sẽ không thỏa mãn với câu trả lời hời hợt, thích tự tìm hiểu, đọc, thử nghiệm để hiểu bản chất. Số 7 học tốt nhất qua trải nghiệm thật, kể cả vấp ngã. Cần khoảng thời gian yên tĩnh một mình để suy nghĩ; bị ép vào môi trường ồn ào liên tục sẽ mệt.</p>
+  </div>
+
+  <div class="stack">
+    <h3>Nhân cách 3, ngày sinh 1, thái độ 9: người khác nhìn thấy gì</h3>
+    <p>Bên ngoài Bảo Linh là người <b>vui vẻ, nhanh nhẹn, có khiếu ăn nói</b> (3 và 111), độc lập, thích tự quyết, không thích bị áp đặt (ngày sinh 1). Ấn tượng ban đầu là người tốt bụng, rộng lượng, có lý tưởng (thái độ 9). Vì vẻ ngoài vui vẻ, người khác có thể không nhận ra bên trong Bảo Linh nghiêm túc và tự đòi hỏi nhiều đến thế nào.</p>
+  </div>
+
+  <div class="stack">
+    <h3>Trưởng thành 11/2 và đỉnh cao đầu tiên ở tuổi 32</h3>
+    <p>Sau tuổi 35–40, năng lượng 11/2 đưa Bảo Linh về hướng cố vấn, truyền cảm hứng, dẫn dắt người khác bằng trực giác và kinh nghiệm. Đỉnh cao 1 đến ở tuổi 32 (năm 2043) mang số 9: giai đoạn thành tựu gắn với cống hiến, tầm ảnh hưởng rộng, có thể làm việc quốc tế hoặc cho cộng đồng.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Sở thích, điểm mạnh và điểm yếu</h2>
+  <div class="stack">
+    <h3>Những thứ Bảo Linh có xu hướng thích</h3>
+    <ul>
+      <li><b>Tìm hiểu cách mọi thứ vận hành:</b> tháo lắp, lắp ráp, lập trình, thí nghiệm, xem tài liệu khoa học (4, 7, 22).</li>
+      <li><b>Xây dựng, sắp xếp:</b> Lego, Minecraft, mô hình, lên kế hoạch, sắp xếp bộ sưu tập (4, 8).</li>
+      <li><b>Trò chuyện, tranh luận, kể chuyện:</b> thích được nói ý kiến, có thể hợp thuyết trình, MC, tranh biện (111, 3).</li>
+      <li><b>Tự do và trải nghiệm mới</b> (đam mê 5): du lịch, khám phá, thử hoạt động mới.</li>
+      <li><b>Chăm lo, giúp đỡ người thân và bạn bè</b> (đam mê 6, thái độ 9).</li>
+    </ul>
+  </div>
+  <div class="sw2">
+    <div class="box g">
+      <h3>Điểm mạnh</h3>
+      <ul>
+        <li>Tư duy hệ thống, thực tế, làm có kết quả cụ thể.</li>
+        <li>Tư duy phân tích và phản biện, không dễ bị dắt mũi.</li>
+        <li>Giao tiếp tốt, tự tin, dễ tạo thiện cảm.</li>
+        <li>Đáng tin, có trách nhiệm với việc mình nhận.</li>
+        <li>Độc lập, chủ động, dám tự quyết.</li>
+        <li>Ước mơ lớn và có khả năng biến nó thành kế hoạch.</li>
+      </ul>
+    </div>
+    <div class="box w">
+      <h3>Điểm yếu cần rèn</h3>
+      <ul>
+        <li>Kỷ luật không có sẵn: dễ trì hoãn, thích đường tắt (13, thiếu 4).</li>
+        <li>Nhớ nhanh quên nhanh nếu không ôn và ghi chép (3-6-9 trống).</li>
+        <li>Dễ thất vọng, bực bội khi không đạt kỳ vọng (4-5-6 trống).</li>
+        <li>Hoài nghi, khó tin người, có lúc cố chấp theo ý mình.</li>
+        <li>Nói nhiều, có thể lấn át hoặc thiếu kiên nhẫn lắng nghe.</li>
+        <li>Tự tạo áp lực lớn cho bản thân (22).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Định hướng nghề nghiệp</h2>
+  <p>Công thức nghề nghiệp của Bảo Linh: <b>4 (xây hệ thống) + 7 (phân tích) + 22 (tầm nhìn lớn) + 3/111 (giao tiếp) + 8 (quản lý, tài chính)</b>. Nghề phù hợp nhất là nghề vừa cần đầu óc logic vừa tạo ra sản phẩm cụ thể, và về lâu dài có cơ hội dẫn dắt người khác. Mức độ phù hợp dưới đây là đánh giá tương đối theo các chỉ số.</p>
+
+  <div class="stack" style="gap:20px">
+    <div class="career">
+      <div class="fit"><span class="lbl">Rất phù hợp</span><div class="bar"><i style="width:95%"></i></div></div>
+      <div class="body">
+        <h3>Công nghệ thông tin và kỹ thuật hệ thống</h3>
+        <div class="tags"><span>Kỹ sư phần mềm</span><span>Kỹ sư dữ liệu / AI</span><span>Kiến trúc giải pháp</span><span>An ninh mạng</span><span>Kỹ thuật điện – tự động hóa</span></div>
+        <p class="why">Đúng với <span class="num">22/4</span> (thiết kế hệ thống lớn) và <span class="num">7</span> (tìm lỗi, hiểu bản chất). Lộ trình dài: lập trình viên → kỹ sư chính → kiến trúc sư giải pháp / CTO. Tổ hợp thi gợi ý: A00, A01.</p>
+      </div>
+    </div>
+    <div class="career">
+      <div class="fit"><span class="lbl">Rất phù hợp</span><div class="bar"><i style="width:90%"></i></div></div>
+      <div class="body">
+        <h3>Phân tích dữ liệu, tài chính, kinh tế</h3>
+        <div class="tags"><span>Phân tích dữ liệu</span><span>Phân tích tài chính / đầu tư</span><span>Kiểm toán</span><span>Actuary (định phí bảo hiểm)</span><span>Chuỗi cung ứng</span></div>
+        <p class="why"><span class="num">4</span> và <span class="num">8</span> cho sự chính xác, cẩn thận với con số; <span class="num">7</span> cho khả năng đọc ra ý nghĩa đằng sau dữ liệu; <span class="num">111</span> giúp trình bày kết quả thuyết phục. Tổ hợp: A00, A01, D01.</p>
+      </div>
+    </div>
+    <div class="career">
+      <div class="fit"><span class="lbl">Phù hợp</span><div class="bar"><i style="width:80%"></i></div></div>
+      <div class="body">
+        <h3>Kiến trúc, xây dựng, kỹ thuật cơ khí</h3>
+        <div class="tags"><span>Kiến trúc sư</span><span>Kỹ sư xây dựng</span><span>Quản lý dự án xây dựng</span><span>Thiết kế sản phẩm công nghiệp</span></div>
+        <p class="why">Nghĩa đen của “Kiến trúc sư” <span class="num">22</span>: tạo công trình bền vững, nhìn thấy được. Hợp nếu Bảo Linh thích vẽ, dựng mô hình. Tổ hợp: A00, V00 (có vẽ).</p>
+      </div>
+    </div>
+    <div class="career">
+      <div class="fit"><span class="lbl">Phù hợp</span><div class="bar"><i style="width:75%"></i></div></div>
+      <div class="body">
+        <h3>Nghiên cứu khoa học, y dược, kỹ thuật y sinh</h3>
+        <div class="tags"><span>Nhà nghiên cứu</span><span>Dược sĩ</span><span>Kỹ thuật y sinh</span><span>Công nghệ sinh học</span></div>
+        <p class="why">Sứ mệnh <span class="num">7</span> là số của nhà nghiên cứu; <span class="num">4</span> cho sự kiên nhẫn làm thí nghiệm lặp lại. Cần kiểm tra thêm sở thích thực tế với Hóa, Sinh. Tổ hợp: B00, A00.</p>
+      </div>
+    </div>
+    <div class="career">
+      <div class="fit"><span class="lbl">Phù hợp</span><div class="bar"><i style="width:70%"></i></div></div>
+      <div class="body">
+        <h3>Luật, tư vấn, giáo dục chuyên môn</h3>
+        <div class="tags"><span>Luật sư doanh nghiệp</span><span>Tư vấn quản lý</span><span>Giảng viên kỹ thuật</span></div>
+        <p class="why">Tận dụng <span class="num">111</span> và <span class="num">3</span> (diễn đạt, tranh luận) cộng với <span class="num">7</span> (lập luận chặt) và <span class="num">4</span> (tôn trọng quy tắc). Đặc biệt hợp giai đoạn sau khi chỉ số trưởng thành <span class="num">11</span> phát huy. Tổ hợp: A01, C00, D01.</p>
+      </div>
+    </div>
+    <div class="career">
+      <div class="fit"><span class="lbl">Dài hạn</span><div class="bar"><i style="width:65%"></i></div></div>
+      <div class="body">
+        <h3>Quản lý và khởi nghiệp</h3>
+        <div class="tags"><span>Quản lý sản phẩm</span><span>Quản lý dự án</span><span>Tự kinh doanh</span></div>
+        <p class="why">Ngày sinh <span class="num">1</span> + <span class="num">8</span> + <span class="num">22</span> cho tố chất dẫn dắt, nhưng nên đi sau khi có chuyên môn vững (sau 25–30 tuổi), không nên là lựa chọn ngành học đầu tiên.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>Môi trường nên tránh hoặc cân nhắc kỹ</h3>
+    <ul>
+      <li>Công việc không có cấu trúc, thay đổi liên tục, không nhìn thấy kết quả cụ thể: số 4 sẽ mất phương hướng.</li>
+      <li>Việc bán hàng áp lực doanh số ngắn hạn, “chốt” nhanh: Bảo Linh có khiếu ăn nói nhưng sẽ không thấy ý nghĩa lâu dài.</li>
+      <li>Công việc lặp lại đơn thuần, không cần suy nghĩ: số 7 và 22 sẽ chán.</li>
+      <li>Môi trường thuần nghệ thuật cảm hứng, không có khung: có thể là sở thích tốt, nhưng khó là nghề chính.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Lộ trình theo năm cá nhân</h2>
+  <p>Năm cá nhân = ngày sinh + tháng sinh + năm đang xét, rút gọn. Chu kỳ 9 năm mới của Bảo Linh bắt đầu đúng năm 2026, năm vào lớp 10.</p>
+  <div class="tl">
+    <div class="now"><div class="y"><b>2026</b><span class="py">Năm 1</span><span class="muted">Lớp 10</span></div><p>Năm khởi đầu. Thời điểm tốt để chọn định hướng, tổ hợp môn, thử CLB lập trình, robotics, tranh biện. Quyết định năm nay có ảnh hưởng cả chu kỳ 9 năm.</p></div>
+    <div><div class="y"><b>2027</b><span class="py">Năm 2</span><span class="muted">Lớp 11</span></div><p>Năm hợp tác và kiên nhẫn. Học nhóm, tìm người thầy/người hướng dẫn. Tiến bộ chậm mà chắc, tránh nóng vội.</p></div>
+    <div><div class="y"><b>2028</b><span class="py">Năm 3</span><span class="muted">Lớp 12</span></div><p>Năm thể hiện. Hợp thi học sinh giỏi, thuyết trình, làm dự án khoa học kỹ thuật, xây hồ sơ xét tuyển.</p></div>
+    <div><div class="y"><b>2029</b><span class="py">Năm 4</span><span class="muted">Thi và vào đại học</span></div><p>Năm của lao động và kỷ luật, trùng số chủ đạo. Rất thuận cho ôn thi nếu có lịch học đều đặn; bất lợi nếu học dồn.</p></div>
+    <div><div class="y"><b>2030</b><span class="py">Năm 5</span><span class="muted">Năm nhất đại học</span></div><p>Năm thay đổi, tự do, môi trường mới. Tốt để thử nhiều hoạt động, trao đổi, du học ngắn hạn.</p></div>
+    <div><div class="y"><b>2043</b><span class="py">Đỉnh cao 9</span><span class="muted">32 tuổi</span></div><p>Đỉnh cao đầu tiên: thành tựu, tầm ảnh hưởng rộng. Các đỉnh sau: 41 tuổi (5), 50 tuổi (5), 59 tuổi (3).</p></div>
+  </div>
+  <p class="muted" style="font-size:14px">Thử thách các giai đoạn: 7, 3, 4, 4. Thử thách 7 thời trẻ là học cách tin người và mở lòng; thử thách 4 lặp lại hai lần nhắc lần nữa về kỷ luật và sự kiên trì.</p>
+</section>
+
+<section>
+  <h2>Gợi ý cho gia đình</h2>
+  <ul>
+    <li><b>Xây thói quen trước, thành tích sau.</b> Lịch học cố định, mục tiêu chia nhỏ theo tuần. Với số 4, thói quen tốt là tài sản lớn nhất.</li>
+    <li><b>Dạy cách học chủ động:</b> ghi chép tay, sơ đồ tư duy, tự giảng lại cho người khác (tận dụng 111), ôn cách quãng.</li>
+    <li><b>Giải thích “tại sao”</b> thay vì ra lệnh. Mũi tên hoài nghi và số 7 cần lý do mới làm hết lòng.</li>
+    <li><b>Đồng hành với cảm xúc khi thất bại.</b> Giúp Bảo Linh gọi tên sự thất vọng và rút bài học, tránh để thành bỏ cuộc.</li>
+    <li><b>Cho thử thật:</b> khóa lập trình, cuộc thi khoa học kỹ thuật, tham quan công ty/công trường, làm dự án nhỏ. Trải nghiệm thật sẽ cho câu trả lời rõ hơn mọi phân tích.</li>
+    <li><b>Kết hợp công cụ khác</b> như trắc nghiệm Holland (RIASEC), kết quả học tập và nói chuyện trực tiếp với Bảo Linh trước khi chốt ngành.</li>
+  </ul>
+</section>
+
+<footer>
+  Thần số học là công cụ tham khảo để hiểu bản thân, không phải kết luận khoa học. Quyết định chọn ngành nên dựa trên năng lực thực tế, sở thích của chính Bảo Linh và trao đổi cởi mở trong gia đình.
+</footer>
+
+</div>
